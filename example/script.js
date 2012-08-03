@@ -86,7 +86,7 @@ Overseer.create(function(){
     
     startEl.addEventListener("click", function(){
         Overseer.create(function(){
-            progress(6);
+            progress(10);
         }, {delay: 40});
     }, false);
     

@@ -4,11 +4,14 @@
  */
 (function(){
     var ThreadManager = function(){
-        
         /**
          * Init
          **/
         var settings = {
+            defaults: {
+                delay: 500,
+                randomMax: 1000
+            },
             errors: {
                 mainArgumentsPassed: "ThreadManager is not a function, use ThreadManager.create(func) instead.",
                 internalMissingType: "Missing type: ",
@@ -21,28 +24,14 @@
             }
         };
         
-        if(arguments.length > 0){
-            console.error(settings.errors.mainArgumentsPassed);
-            return;
-        }
-        
         /**
          * Helpers
          **/
-        var getName = function(n){
-            for(var i in n){
-                return i;
-            }
-        };
-        var isNothing = function(obj){
-            return  (obj === null) ||
-                    (obj === undefined);
-        };
         var type = function(obj){
             if(obj instanceof Function) return "function";
             if(obj instanceof Number) return "number";
-            if(obj instanceof Boolean) return "boolean";
-            if(obj instanceof String) return "string";
+            if(obj instanceof Boolean || typeof obj == "boolean") return "boolean";
+            if(obj instanceof String || typeof obj == "string") return "string";
             if(obj instanceof Array) return "array";
             if(obj instanceof Date) return "date";
             if(obj.toString().indexOf("Object") != -1) return "object";
@@ -73,21 +62,20 @@
                 }
             };
         };
-        var threads = new Threads();
         
         /**
          * Thread class
          **/
         var Thread = function(name, func, opt){
-            var delay = 500;
-            if(!isNothing(opt.delay)){
+            var delay = settings.defaults.delay;
+            if(opt && opt.delay){
                 delay = opt.delay;
             }
             var stopped = true,
                 timer = null;
             var getDelay = function(){
                 if(delay === "random"){
-                    return Math.floor(Math.random() * 1000 + 1);
+                    return Math.floor(Math.random() * settings.defaults.randomMax + 1);
                 }
                 return delay;
             };
@@ -105,7 +93,7 @@
             };
             this.stop = function(){
                 stopped = true;
-                if(!isNothing(timer)){
+                if(timer){
                     clearTimeout(timer);
                 }
             };
@@ -115,6 +103,7 @@
          * Interface
          **/
         var anonThreads = 0;
+        var threads = new Threads();
         this.create = function(){
             var arg = arguments[0],
                 objType = type(arg),
@@ -125,10 +114,10 @@
                 return;
             }
             if(arguments.length > 1)
-                if(!isNothing(arguments[1]) && type(arguments[1]) === "object"){
+                if(arguments[1] && type(arguments[1]) === "object"){
                     opt = arguments[1];
                 }
-            if(isNothing(opt.single)){
+            if(!opt.single){
                 opt.single = false;
             }
             if(objType === "function"){
@@ -159,9 +148,8 @@
             }
         };
 	};
-    
     /**
-     * Start init
+     * init
      **/
     window.Overseer = new ThreadManager();
 })();
