@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style type="text/css">
+        #res > div {
+            border: 1px solid black;
+            width: 30px;
+            height: 120px;
+            float: left;
+            margin: 4px;
+            position: relative;
+        }
+        #res > div > div {
+            background-color: lime;
+            border: 1px solid silver;
+            position: absolute;
+            bottom: 0px;
+            width: 100%;
+        }
+    </style>
+    <script type="text/javascript" src="../overseer.js"></script>
+    <script type="text/javascript" src="script.js"></script>
+</head>
+<body>
+    <button id="stop">Stop</button>
+    <button id="start">Start</button>
+    <div id="res"></div>
+</body>
+</html>
