@@ -2,37 +2,7 @@
 /**
  * Engine
  */
-var Overseer;
 (function(){
-    window.$ = function(selector){
-        if(!selector)
-            return null;
-		var DOMobj = null;
-		if(typeof selector === "string"){
-            var elArray = selector.split(" ");
-            for(var i in elArray){
-                var item = elArray[i];
-                switch(item[0]){
-                    case ".":
-                        //TODO get elements by class
-                        break;
-                    case "#":
-                        DOMobj = document.getElementById(item.substring(1));
-                        break;
-                    default:
-                        
-                        break;
-                }
-            }
-		}
-        else if(typeof selector === "object"){
-            if(selector === document){
-                console.dir(this);
-                return;
-            }
-        }
-        return DOMobj;
-	};
     var ThreadManager = function(){
         
         /**
@@ -193,6 +163,5 @@ var Overseer;
     /**
      * Start init
      **/
-    Overseer = new ThreadManager();
-    
+    window.Overseer = new ThreadManager();
 })();
