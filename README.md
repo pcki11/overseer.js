@@ -3,8 +3,8 @@ overseer.js
 
 Abstraction above setTimeout javascript function.
 
-Usage:
-*Create recurring task:
+**Usage:**  
+*Create recurring task:*
 
     var task = Overseer.create(function(){
         // the function to execute
@@ -14,6 +14,6 @@ Usage:
         single: false // task is recurring
     });
 
-*Stop task:
+*Stop task:*
 
     Overseer.stop(task);
