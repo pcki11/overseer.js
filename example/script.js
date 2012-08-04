@@ -79,15 +79,15 @@ Overseer.create(function(){
         resEl.appendChild(nCont);
         numArray[j] = 0;
     }
-    
+    var task = Overseer.create(function(){
+            progress(30);
+        }, {delay: 40, start: false});
     stopEl.addEventListener("click", function(){
-        Overseer.stop();
+        Overseer.stop(task);
     }, false);
     
     startEl.addEventListener("click", function(){
-        Overseer.create(function(){
-            progress(10);
-        }, {delay: 40});
+        Overseer.start(task);
     }, false);
     
 }, {delay: 1000, single: true});

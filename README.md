@@ -10,10 +10,19 @@ Abstraction above setTimeout javascript function.
         // the function to execute
         console.log("tick");
     }, {
-        delay:  1500, // 1.5 sec delay
-        single: false // task is recurring
+        delay:  1500,   // accepts number or "random" as value
+        single: false,  // task is recurring
+        start:  false   // do not start task just yet
     });
+
+*Start task:*
+
+    Overseer.start(task);
 
 *Stop task:*
 
     Overseer.stop(task);
+
+*Stop all tasks:*
+
+    Overseer.stop();

@@ -29,49 +29,23 @@
          **/
         var type = function(obj){
             if(obj instanceof Function) return "function";
-            if(obj instanceof Number) return "number";
+            if(obj instanceof Number || (typeof obj == "number" && !isNaN(obj))) return "number";
             if(obj instanceof Boolean || typeof obj == "boolean") return "boolean";
             if(obj instanceof String || typeof obj == "string") return "string";
             if(obj instanceof Array) return "array";
             if(obj instanceof Date) return "date";
+            if(!obj) return "empty";
             if(obj.toString().indexOf("Object") != -1) return "object";
             console.info(settings.infos.typeNotImplemented + obj.toString());
             return obj.toString();
         };
         
         /**
-         * Threads class
-         **/
-        var Threads = function(){
-            var threads = {};
-            this.push = function(obj){
-                threads[obj.name] = obj;
-                obj.start();
-                return obj.name;
-            };
-            this.stop = function(str){
-                var thread = threads[str];
-                if(thread === undefined){
-                    throw new Error("No such thread");
-                }
-                thread.stop();
-            };
-            this.stopAll = function(){
-                for(var i in threads){
-                    threads[i].stop();
-                }
-            };
-        };
-        
-        /**
          * Thread class
          **/
         var Thread = function(name, func, opt){
-            var delay = settings.defaults.delay;
-            if(opt && opt.delay){
-                delay = opt.delay;
-            }
-            var stopped = true,
+            var delay = opt.delay,
+                stopped = true,
                 timer = null;
             var getDelay = function(){
                 if(delay === "random"){
@@ -90,11 +64,42 @@
             this.start = function(){
                 stopped = false;
                 timer = setTimeout(run, getDelay());
+                return this.name;
             };
             this.stop = function(){
                 stopped = true;
                 if(timer){
                     clearTimeout(timer);
+                }
+                return this.name;
+            };
+        };
+        
+        /**
+         * Threads class
+         **/
+        var Threads = function(){
+            var threads = {};
+            var getThread = function(threadID){
+                var thread = threads[threadID];
+                if(thread === undefined){
+                    throw new Error("No such thread");
+                }
+                return thread;
+            };
+            this.push = function(obj){
+                threads[obj.name] = obj;
+                return obj.name;
+            };
+            this.start = function(threadID){
+                return getThread(threadID).start();
+            };
+            this.stop = function(threadID){
+                return getThread(threadID).stop();
+            };
+            this.stopAll = function(){
+                for(var i in threads){
+                    threads[i].stop();
                 }
             };
         };
@@ -102,35 +107,50 @@
         /**
          * Interface
          **/
-        var anonThreads = 0;
         var threads = new Threads();
+        
         this.create = function(){
-            var arg = arguments[0],
-                objType = type(arg),
-                threadID = null;    
-            var opt = {};
             if(arguments.length < 1) {
                 console.info(settings.infos.createEmptyCreate);
                 return;
             }
-            if(arguments.length > 1)
-                if(arguments[1] && type(arguments[1]) === "object"){
-                    opt = arguments[1];
-                }
-            if(!opt.single){
+            var action = arguments[0],
+                objType = type(action),
+                threadID = null;    
+            var opt = {};
+            if(arguments.length > 1 && type(arguments[1]) === "object"){
+                opt = arguments[1];
+            }
+            opt.delay = opt.delay || settings.defaults.delay;
+            if(type(opt.single) !== "boolean") {
                 opt.single = false;
             }
-            if(objType === "function"){
-                threadID = arg.name;
+            if(type(opt.start) !== "boolean"){
+                opt.start = true;
+            }
+            if(type(opt.delay) !== "number" && opt.delay !== "random") {
+                opt.delay = settings.defaults.delay;
+            }
+            if(objType === "function") {
+                threadID = action.name;
                 if(threadID.length === 0){
-                    threadID = "_thread" + (anonThreads++);
+                    threadID = "_thread_" + (new Date()).getTime();
                 }
-                threadID = threads.push(new Thread(threadID, arg, opt));
+                threadID = threads.push(new Thread(threadID, action, opt));
+                if(opt.start){
+                    threads.start(threadID);
+                }
             }
             if(threadID === null){
                 console.error(settings.errors.createThreadCreationFailed);
             }
             return threadID;
+        };
+        this.start = function(){
+            if(arguments.length > 0 && type(arguments[0]) === "string"){
+                return threads.start(arguments[0]);
+            }
+            return null;    
         };
         this.stop = function(){
             var threadID = null;
@@ -138,14 +158,15 @@
                 threadID = arguments[0];
             if(threadID === null){
                 threads.stopAll();
-                return;
+                return null;
             }
             try {
-                threads.stop(threadID);
+                return threads.stop(threadID);
             }
             catch(ex){
                 console.error(settings.errors.stopThreadNotFound + threadID);
             }
+            return null;
         };
 	};
     /**
