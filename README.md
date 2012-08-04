@@ -10,7 +10,7 @@ Abstraction above setTimeout javascript function.
         // the function to execute
         console.log("tick");
     }, {
-        delay:  1500,   // accepts number or "random" as value
+        delay:  1500,   // accepts number or "random" (1 - 1000 ms) as value
         single: false,  // task is recurring
         start:  false   // do not start task just yet
     });
