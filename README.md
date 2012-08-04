@@ -4,7 +4,8 @@ overseer.js
 Abstraction above setTimeout javascript function.
 
 Usage:
-    // create recurring task
+*Create recurring task:
+
     var task = Overseer.create(function(){
         // the function to execute
         console.log("tick");
@@ -13,5 +14,6 @@ Usage:
         single: false // task is recurring
     });
 
-    // stop task
+*Stop task:
+
     Overseer.stop(task);
